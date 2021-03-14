@@ -29,22 +29,14 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
     final currentState = state;
+    // if (event is PostIdeal) {
+    //   if (currentState is PostPreInitial) {}
+    // }
     if (event is PostFetched && !_hasReachedMax(currentState)) {
+      yield PostLoadInProgress();
       try {
-        if (currentState is PostInitial) {
-          final posts = await _fetchPosts(0, 20);
-          yield PostSuccess(posts: posts, hasReachedMax: false);
-          return;
-        }
-        if (currentState is PostSuccess) {
-          final posts = await _fetchPosts(currentState.posts.length, 20);
-          yield posts.isEmpty
-              ? currentState.copyWith(hasReachedMax: true)
-              : PostSuccess(
-                  posts: currentState.posts + posts,
-                  hasReachedMax: false,
-                );
-        }
+        final posts = await _fetchPosts();
+        yield PostSuccess(posts: posts, hasReachedMax: false);
       } catch (_) {
         yield PostFailure();
       }
@@ -54,7 +46,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   bool _hasReachedMax(PostState state) =>
       state is PostSuccess && state.hasReachedMax;
 
-  Future<List<DataModel>> _fetchPosts(int startIndex, int limit) async {
+  Future<List<DataModel>> _fetchPosts() async {
     final response = await httpClient
         .get('https://5ea57aa32d86f00016b45dc2.mockapi.io/api/v1/users');
     if (response.statusCode == 200) {

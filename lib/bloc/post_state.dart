@@ -9,6 +9,8 @@ abstract class PostState extends Equatable {
 
 class PostInitial extends PostState {}
 
+class PostLoadInProgress extends PostState {}
+
 class PostFailure extends PostState {}
 
 class PostSuccess extends PostState {
