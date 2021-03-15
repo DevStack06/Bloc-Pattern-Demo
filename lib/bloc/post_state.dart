@@ -11,6 +11,8 @@ class PostInitial extends PostState {}
 
 class PostLoadInProgress extends PostState {}
 
+class PostOffline extends PostState {}
+
 class PostFailure extends PostState {}
 
 class PostSuccess extends PostState {
